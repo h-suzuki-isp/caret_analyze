@@ -20,7 +20,8 @@ from collections.abc import Sequence
 from multimethod import multimethod as singledispatchmethod
 
 from .column import ColumnValue
-from .record import Record, RecordInterface, Records, RecordsInterface
+# from .record import Record, Records
+from .interface import RecordsInterface, RecordInterface
 
 try:
     import caret_analyze.record.record_cpp_impl as cpp_impl
@@ -42,8 +43,8 @@ class RecordFactory:
     def create_instance(cls, init: dict | None = None) -> RecordInterface:
         if use_cpp_impl:
             return cls._create_cpp_instance(init)
-        else:
-            return Record(init)
+        # else:
+        #     return Record(init)
 
     @classmethod
     def _create_cpp_instance(cls, init: dict | None = None) -> RecordInterface:
@@ -76,8 +77,8 @@ class RecordsFactory:
     ) -> RecordsInterface:
         if use_cpp_impl:
             return RecordsFactory._create_cpp_instance(init, columns)
-        else:
-            return Records(init, columns)
+        # else:
+        #     return Records(init, columns)
 
     @staticmethod
     @create_instance.register
@@ -93,8 +94,8 @@ class RecordsFactory:
 
         if use_cpp_impl:
             return RecordsFactory._create_cpp_instance(records, columns)
-        else:
-            return Records(records, columns)
+        # else:
+        #     return Records(records, columns)
 
     @staticmethod
     def _create_cpp_instance(

@@ -16,11 +16,8 @@ from .column import Column, Columns, ColumnValue
 from .data_frame_shaper import Clip, DataFrameShaper, Strip
 from .record import (merge,
                      merge_sequential,
-                     merge_sequential_for_addr_track,
-                     Record,
-                     RecordInterface,
-                     Records,
-                     RecordsInterface)
+                     merge_sequential_for_addr_track)
+from .interface import RecordInterface, RecordsInterface
 from .record_factory import RecordFactory, RecordsFactory
 from .records_service import Frequency, Latency, Period, Range, ResponseTime, StackedBar
 
