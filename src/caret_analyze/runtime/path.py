@@ -23,9 +23,10 @@ from .node_path import NodePath
 from .path_base import PathBase
 from ..common import Summarizable, Summary, Util
 from ..exceptions import Error, InvalidArgumentError, InvalidRecordsError
-from ..record import Columns, RecordsFactory
-from ..record.interface import RecordsInterface
-from ..record.record_operations import merge, merge_sequential
+from ..record import (merge, merge_sequential,
+                      Columns,
+                      RecordsInterface,
+                      RecordsFactory)
 from ..value_objects import CallbackChain, PathStructValue
 
 logger = getLogger(__name__)

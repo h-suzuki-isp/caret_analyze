@@ -29,9 +29,10 @@ from .subscription import Subscription
 from ..architecture import Architecture
 from ..common import Summarizable, Summary, Util
 from ..exceptions import Error, InvalidArgumentError, UnsupportedTypeError
-from ..infra.infra_base import InfraBase
-from ..infra.interface import RecordsProvider, RuntimeDataProvider
-from ..infra.lttng.lttng import Lttng
+from ..infra import (InfraBase,
+                     RecordsProvider,
+                     RuntimeDataProvider,
+                     Lttng)
 from ..infra.lttng.records_provider_lttng import RecordsProviderLttng
 from ..value_objects import NodePathStructValue
 
