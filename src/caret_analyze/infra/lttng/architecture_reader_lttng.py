@@ -19,7 +19,7 @@ from collections.abc import Sequence
 
 
 from .lttng import LttngEventFilter
-from ...architecture.reader_interface import ArchitectureReader
+from ...architecture import ArchitectureReader
 from ...value_objects import (
     CallbackGroupValue,
     ExecutorValue,
