@@ -21,8 +21,8 @@ import pandas as pd
 from record_cpp_impl import RecordBase, RecordsBase
 
 from .column import Column, Columns, ColumnValue
-from .record import validate_rename_rule
 from .interface import RecordInterface, RecordsInterface
+from .record_operations import validate_rename_rule
 from ..exceptions import InvalidArgumentError
 
 
@@ -309,7 +309,7 @@ class RecordsCppImpl(RecordsInterface):
             RecordsCppImpl.__validate_unknown_columns(set(record.columns), columns_set)
 
         RecordsCppImpl.__validate_duplicated_columns(columns)
-        
+
     @staticmethod
     def __validate_duplicated_columns(columns: Sequence[str]):
         if len(set(columns)) != len(columns):
@@ -333,7 +333,7 @@ class RecordsCppImpl(RecordsInterface):
             msg = 'Contains an unknown columns. '
             msg += f'{unknown_column}'
             raise InvalidArgumentError(msg)
-        
+
     @staticmethod
     def _validate_merge_records(
         columns: list[str] | None,
@@ -349,7 +349,7 @@ class RecordsCppImpl(RecordsInterface):
         RecordsCppImpl.__validate_unknown_columns(columns_set, columns_set_)
 
         RecordsCppImpl.__validate_duplicated_columns(columns)
-        
+
     @staticmethod
     def _get_column_series_core(records: RecordsInterface, column_name: str):
         if column_name not in records.columns:
@@ -361,7 +361,7 @@ class RecordsCppImpl(RecordsInterface):
             else:
                 l.append(None)
         return l
-    
+
     @staticmethod
     def _to_dataframe(
         df_list: list[dict[str, int]],
