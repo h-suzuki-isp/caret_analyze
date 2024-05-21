@@ -300,6 +300,8 @@ class NodeValuesLoaded():
         nodes = self._remove_duplicated(nodes)
 
         for node in Progress.tqdm(nodes, 'Loading nodes.'):
+            if(node.node_name == '/planning/scenario_planning/lane_driving/motion_planning/obstacle_cruise_planner'):
+                print('node')
             try:
                 node, cb_loaded, cbg_loaded = self._create_node(
                     node,
@@ -1741,7 +1743,7 @@ class TopicIgnoredReader(ArchitectureReader):
 
     def get_subscriptions(self, node: NodeValue) -> list[SubscriptionValue]:
         subscriptions: list[SubscriptionValue] = []
-        for subscription in self._reader.get_subscriptions(node):
+        for subscription in self._reader.get_subscriptions(node): #ここに処理を追加？
             if subscription.topic_name in self._ignore_topics:
                 continue
             subscriptions.append(subscription)

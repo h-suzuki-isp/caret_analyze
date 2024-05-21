@@ -1,0 +1,58 @@
+named_paths: []
+executors:
+- executor_type: single_threaded_executor
+  executor_name: executor_2
+  callback_group_names:
+  - /minimal_publisher/callback_group_0
+- executor_type: single_threaded_executor
+  executor_name: executor_3
+  callback_group_names:
+  - /minimalSubscriber/callback_group_0
+  - /minimalSubscriber/callback_group_1
+nodes:
+- node_name: /minimalSubscriber
+  callback_groups:
+  - callback_group_type: mutually_exclusive
+    callback_group_name: /minimalSubscriber/callback_group_0
+    callback_names:
+    - /minimalSubscriber/callback_1
+  - callback_group_type: mutually_exclusive
+    callback_group_name: /minimalSubscriber/callback_group_1
+    callback_names:
+    - /minimalSubscriber/callback_0
+  callbacks:
+  - callback_name: /minimalSubscriber/callback_0
+    callback_type: subscription_callback
+    topic_name: /topic_2
+    symbol: InterProcessPollingSubscriber<std_msgs::msg::String_<std::allocator<void>
+      > >::InterProcessPollingSubscriber(rclcpp::Node*, std::__cxx11::basic_string<char,
+      std::char_traits<char>, std::allocator<char> > const&)::{lambda(std::shared_ptr<std_msgs::msg::String_<std::allocator<void>
+      > const>)#1}
+  - callback_name: /minimalSubscriber/callback_1
+    callback_type: subscription_callback
+    topic_name: /topic
+    symbol: std::_Bind<void (MinimalSubscriber::*(MinimalSubscriber*, std::_Placeholder<1>))(std_msgs::msg::String_<std::allocator<void>
+      > const&) const>
+  variable_passings:
+  - callback_name_write: UNDEFINED
+    callback_name_read: UNDEFINED
+  subscribes:
+  - topic_name: /topic
+    callback_name: /minimalSubscriber/callback_1
+  - topic_name: /topic_2
+    callback_name: /minimalSubscriber/callback_0
+- node_name: /minimal_publisher
+  callback_groups:
+  - callback_group_type: mutually_exclusive
+    callback_group_name: /minimal_publisher/callback_group_0
+    callback_names:
+    - /minimal_publisher/callback_0
+  callbacks:
+  - callback_name: /minimal_publisher/callback_0
+    callback_type: timer_callback
+    period_ns: 500000000
+    symbol: std::_Bind<void (MinimalPublisher::*(MinimalPublisher*))()>
+  publishes:
+  - topic_name: /topic
+    callback_names:
+    - /minimal_publisher/callback_0

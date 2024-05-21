@@ -344,7 +344,11 @@ class ArchitectureReaderYaml(ArchitectureReader):
         if 'subscribes' not in node_dict.keys():
             return []
 
+        callbacks_name = [callback['callback_name'] for callback in node_dict['callbacks']] #変更箇所
+
         for sub in self._get_value(node_dict, 'subscribes'):
+            if sub['callback_name'] not in callbacks_name: #変更箇所
+                continue
             subscriptions.append(
                 SubscriptionValue(
                     node_name=node.node_name,

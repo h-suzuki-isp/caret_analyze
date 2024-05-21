@@ -1,0 +1,16 @@
+digraph graphname {
+	graph [bb="0,0,75.393,36",
+		compound=True,
+		rank=same,
+		rankdir=LR,
+		ranksep=0.2
+	];
+	node [label="\N"];
+	n___temp	[URL=__temp,
+		height=0.5,
+		label="/temp",
+		pos="37.697,18",
+		shape=ellipse,
+		tooltip="/temp",
+		width=1.0471];
+}
