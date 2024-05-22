@@ -203,6 +203,7 @@ class Architecture(Summarizable):
 
     @property
     def nodes(self) -> tuple[NodeStructValue, ...]:
+        a=self._nodes[64].to_value()
         return tuple(v.to_value() for v in self._nodes)
 
     @property
