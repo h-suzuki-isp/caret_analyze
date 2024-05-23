@@ -257,12 +257,23 @@ class ArchitectureReaderYaml(ArchitectureReader):
         if 'callbacks' not in node_dict:
             return []
 
+        # この辺に変更を入れた
+        # callbacks_names = Util.flatten([callback_group['callback_names']
+        #                                for callback_group in self._get_value(node_dict, 'callback_groups')])
+        # callback_values_ = self._get_value(node_dict, 'callbacks')
+        # callback_values = []
+        # for callback_value in callback_values_:
+        #     if callback_value['callback_name'] in callbacks_names:
+        #         callback_values.append(callback_value)
+
         callback_values = self._get_value(node_dict, 'callbacks')
         callback_values = filter(is_target, callback_values)
 
         callbacks = []
         for val in callback_values:
             callback_name = self._get_value(val, 'callback_name')
+            # if callback_name not in callbacks_names: #callback_groupのnameになかったらcontinue
+            #     continue
             publish_topic_infos = self._get_publish_topic_infos(node.node_name, callback_name)
             callback_id = callback_name
             node_name = self._get_value(node_dict, 'node_name')
@@ -344,11 +355,7 @@ class ArchitectureReaderYaml(ArchitectureReader):
         if 'subscribes' not in node_dict.keys():
             return []
 
-        callbacks_name = [callback['callback_name'] for callback in node_dict['callbacks']] #変更箇所
-
         for sub in self._get_value(node_dict, 'subscribes'):
-            if sub['callback_name'] not in callbacks_name: #変更箇所
-                continue
             subscriptions.append(
                 SubscriptionValue(
                     node_name=node.node_name,

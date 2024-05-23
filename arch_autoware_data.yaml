@@ -12983,27 +12983,6 @@ nodes:
     callback_names:
     - /planning/scenario_planning/lane_driving/motion_planning/obstacle_cruise_planner/callback_3
   callbacks:
-  - callback_name: /planning/scenario_planning/lane_driving/motion_planning/obstacle_cruise_planner/callback_0
-    callback_type: subscription_callback
-    topic_name: /localization/kinematic_state
-    symbol: tier4_autoware_utils::InterProcessPollingSubscriber<nav_msgs::msg::Odometry_<std::allocator<void>
-      > >::InterProcessPollingSubscriber(rclcpp::Node*, std::__cxx11::basic_string<char,
-      std::char_traits<char>, std::allocator<char> > const&)::{lambda(std::shared_ptr<nav_msgs::msg::Odometry_<std::allocator<void>
-      > const>)#1}
-  - callback_name: /planning/scenario_planning/lane_driving/motion_planning/obstacle_cruise_planner/callback_1
-    callback_type: subscription_callback
-    topic_name: /perception/object_recognition/objects
-    symbol: tier4_autoware_utils::InterProcessPollingSubscriber<autoware_auto_perception_msgs::msg::PredictedObjects_<std::allocator<void>
-      > >::InterProcessPollingSubscriber(rclcpp::Node*, std::__cxx11::basic_string<char,
-      std::char_traits<char>, std::allocator<char> > const&)::{lambda(std::shared_ptr<autoware_auto_perception_msgs::msg::PredictedObjects_<std::allocator<void>
-      > const>)#1}
-  - callback_name: /planning/scenario_planning/lane_driving/motion_planning/obstacle_cruise_planner/callback_2
-    callback_type: subscription_callback
-    topic_name: /localization/acceleration
-    symbol: tier4_autoware_utils::InterProcessPollingSubscriber<geometry_msgs::msg::AccelWithCovarianceStamped_<std::allocator<void>
-      > >::InterProcessPollingSubscriber(rclcpp::Node*, std::__cxx11::basic_string<char,
-      std::char_traits<char>, std::allocator<char> > const&)::{lambda(std::shared_ptr<geometry_msgs::msg::AccelWithCovarianceStamped_<std::allocator<void>
-      > const>)#1}
   - callback_name: /planning/scenario_planning/lane_driving/motion_planning/obstacle_cruise_planner/callback_3
     callback_type: subscription_callback
     topic_name: /planning/scenario_planning/lane_driving/motion_planning/obstacle_velocity_limiter/trajectory
