@@ -33,7 +33,6 @@ class NodeStruct():
     def __init__(
         self,
         node_name: str,
-        callbacks: list[CallbackStruct],
         publishers: list[PublisherStruct],
         subscriptions_info: list[SubscriptionStruct],
         services: list[ServiceStruct],
@@ -43,7 +42,6 @@ class NodeStruct():
         variable_passings: list[VariablePassingStruct] | None,
     ) -> None:
         self._node_name = node_name
-        self._callbacks = callbacks
         self._publishers = publishers
         self._subscriptions = subscriptions_info
         self._services = services
@@ -82,7 +80,11 @@ class NodeStruct():
 
     @property
     def callbacks(self) -> list[CallbackStruct] | None:
-        return self._callbacks
+        subscription_callbacks = [sub.callback for sub in self.subscriptions]
+        service_callbacks = [service.callback for service in self.services]
+        timer_callbacks = [timer.callback for timer in self.timers]
+        callbacks = subscription_callbacks + service_callbacks + timer_callbacks
+        return callbacks
 
     @property
     def callback_names(self) -> list[str] | None:
@@ -169,7 +171,6 @@ class NodeStruct():
     def to_value(self) -> NodeStructValue:
         return NodeStructValue(
             self.node_name,
-            tuple(v.to_value() for v in self.callbacks),
             tuple(v.to_value() for v in self.publishers),
             tuple(v.to_value() for v in self.subscriptions),
             tuple(v.to_value() for v in self.services),
