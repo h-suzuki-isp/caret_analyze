@@ -315,6 +315,7 @@ class RecordsProviderLttng(RuntimeDataProvider):
         columns = [
             COLUMN_NAME.CALLBACK_START_TIMESTAMP,
             COLUMN_NAME.SOURCE_TIMESTAMP,
+            COLUMN_NAME.RMW_TAKE_TIMESTAMP,
         ]
         self._format(sub_records, columns)
 
@@ -921,7 +922,8 @@ class RecordsProviderLttng(RuntimeDataProvider):
             columns.append(COLUMN_NAME.RCL_PUBLISH_TIMESTAMP)
         if COLUMN_NAME.DDS_WRITE_TIMESTAMP in records.columns:
             columns.append(COLUMN_NAME.DDS_WRITE_TIMESTAMP)
-        columns.append(COLUMN_NAME.SOURCE_TIMESTAMP)
+        columns.append(COLUMN_NAME.RMW_TAKE_TIMESTAMP)
+        # columns.append(COLUMN_NAME.SOURCE_TIMESTAMP)
         columns.append(COLUMN_NAME.CALLBACK_START_TIMESTAMP)
 
         self._format(records, columns)
@@ -1376,7 +1378,7 @@ class NodeRecordsUseLatestMessage:
         ]
         left_key = sub_records.columns[0]
         for column in columns:
-            if column.endswith(COLUMN_NAME.RMW_TAKE_TIMESTAMP):
+            if column.endswith(COLUMN_NAME.SOURCE_TIMESTAMP):
                 columns.remove(column)
                 left_key = column
 
@@ -1672,7 +1674,8 @@ class FilteredRecordsSource:
             columns.append(COLUMN_NAME.DDS_WRITE_TIMESTAMP)
         columns += [
             COLUMN_NAME.MESSAGE_TIMESTAMP,
-            COLUMN_NAME.SOURCE_TIMESTAMP
+            COLUMN_NAME.SOURCE_TIMESTAMP,
+            COLUMN_NAME.RMW_TAKE_TIMESTAMP,
         ]
         drop = list(set(merged.columns) - set(columns))
         merged.drop_columns(drop)
