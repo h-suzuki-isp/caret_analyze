@@ -275,6 +275,93 @@ class RecordsProviderLttng(RuntimeDataProvider):
 
         return rmw_records
 
+    def communication_take_records(
+        self,
+        subscription: SubscriptionStructValue,
+        pub_records: RecordsInterface
+    ) -> RecordsInterface:
+        """
+        Provide subscription records.
+
+        This method is implemented for nodes which receive messages
+        by 'take' method instead of subscription callbacks.
+
+        Parameters
+        ----------
+        subscription : SubscriptionStructValue
+            Target subscription value.
+
+        Returns
+        -------
+        RecordsInterface
+            Columns
+
+            - [topic_name]/source_timestamp
+            - rmw_take_timestamp
+
+        """
+        callback = subscription.callback
+        if callback is not None:
+            callback_objects = self._helper.get_subscription_callback_objects(callback)
+
+            try:
+                rmw_handle =\
+                    self._srv.get_rmw_subscription_handle_from_callback_object(callback_objects[0])
+            except InvalidArgumentError:
+                rmw_handle = None
+
+        # get rmw_records, which relates to callback_object
+        sub_records: RecordsInterface
+        if rmw_handle is not None and rmw_handle in self._source._grouped_rmw_take_records:
+            sub_records = self._source._grouped_rmw_take_records[rmw_handle].clone()
+        else:
+            sub_records = RecordsFactory.create_instance(
+                None,
+                columns=[
+                    # TODO
+                    ]
+                )
+
+        # drop columns
+        columns = sub_records.columns
+        drop_columns = list(
+            set(columns) - {COLUMN_NAME.SOURCE_TIMESTAMP, COLUMN_NAME.RMW_TAKE_TIMESTAMP}
+            )
+        sub_records.drop_columns(drop_columns)
+
+        # reindex
+        sub_records.reindex([COLUMN_NAME.SOURCE_TIMESTAMP, COLUMN_NAME.RMW_TAKE_TIMESTAMP])
+
+        merged = merge(
+            left_records=pub_records,
+            right_records=sub_records,
+            join_left_key=COLUMN_NAME.SOURCE_TIMESTAMP,
+            join_right_key=COLUMN_NAME.SOURCE_TIMESTAMP,
+            columns=Columns.from_str(
+                pub_records.columns + sub_records.columns
+            ).column_names,
+            how='left'
+        )
+
+        columns = [
+            COLUMN_NAME.RCLCPP_PUBLISH_TIMESTAMP,
+        ]
+        if COLUMN_NAME.RCL_PUBLISH_TIMESTAMP in merged.columns:
+            columns.append(COLUMN_NAME.RCL_PUBLISH_TIMESTAMP)
+        if COLUMN_NAME.DDS_WRITE_TIMESTAMP in merged.columns:
+            columns.append(COLUMN_NAME.DDS_WRITE_TIMESTAMP)
+        columns += [
+            COLUMN_NAME.MESSAGE_TIMESTAMP,
+            COLUMN_NAME.SOURCE_TIMESTAMP,
+            COLUMN_NAME.RMW_TAKE_TIMESTAMP,
+        ]
+        drop = list(set(merged.columns) - set(columns))
+        merged.drop_columns(drop)
+        merged.reindex(columns)
+        merged.sort(COLUMN_NAME.RCLCPP_PUBLISH_TIMESTAMP)
+
+        return merged
+
     def _subscribe_records(
         self,
         subscription: SubscriptionStructValue
@@ -915,7 +1002,9 @@ class RecordsProviderLttng(RuntimeDataProvider):
         publisher_handles = self._helper.get_publisher_handles(publisher)
         callback_object = self._helper.get_subscription_callback_object_inter(subscription_cb)
 
-        records = self._source.inter_comm_records(publisher_handles, callback_object)
+        records, is_take_node = self._source.inter_comm_records(publisher_handles, callback_object)
+        if is_take_node:
+            records = self.communication_take_records(comm_value.subscription, records)
 
         columns = [COLUMN_NAME.RCLCPP_PUBLISH_TIMESTAMP]
         if COLUMN_NAME.RCL_PUBLISH_TIMESTAMP in records.columns:
@@ -924,7 +1013,8 @@ class RecordsProviderLttng(RuntimeDataProvider):
             columns.append(COLUMN_NAME.DDS_WRITE_TIMESTAMP)
         columns.append(COLUMN_NAME.RMW_TAKE_TIMESTAMP)
         # columns.append(COLUMN_NAME.SOURCE_TIMESTAMP)
-        columns.append(COLUMN_NAME.CALLBACK_START_TIMESTAMP)
+        if not is_take_node:
+            columns.append(COLUMN_NAME.CALLBACK_START_TIMESTAMP)
 
         self._format(records, columns)
 
@@ -1653,8 +1743,7 @@ class FilteredRecordsSource:
 
         is_take_node = len(sub_records) == 0
         if is_take_node:
-            a = 1
-            sub_records = self.communication_take_records(callback_object)
+            return pub_records, is_take_node
 
         merged = merge(
             left_records=pub_records,
@@ -1690,7 +1779,7 @@ class FilteredRecordsSource:
         # regardless of the time of publish.
         merged.sort(COLUMN_NAME.RCLCPP_PUBLISH_TIMESTAMP)
 
-        return merged
+        return merged, is_take_node
 
     def intra_comm_records(
         self,
