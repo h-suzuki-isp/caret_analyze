@@ -1651,6 +1651,11 @@ class FilteredRecordsSource:
         pub_records = self.publish_records(publisher_handles)
         sub_records = self.sub_records(callback_object, None)
 
+        is_take_node = len(sub_records) == 0
+        if is_take_node:
+            a = 1
+            sub_records = self.communication_take_records(callback_object)
+
         merged = merge(
             left_records=pub_records,
             right_records=sub_records,
