@@ -258,12 +258,12 @@ class RecordsProviderLttng(RuntimeDataProvider):
         # drop columns
         columns = rmw_records.columns
         drop_columns = list(
-            set(columns) - {COLUMN_NAME.SOURCE_TIMESTAMP, COLUMN_NAME.RMW_TAKE_TIMESTAMP}
+            set(columns) - {COLUMN_NAME.RMW_TAKE_TIMESTAMP}
             )
         rmw_records.drop_columns(drop_columns)
 
         # reindex
-        rmw_records.reindex([COLUMN_NAME.SOURCE_TIMESTAMP, COLUMN_NAME.RMW_TAKE_TIMESTAMP])
+        rmw_records.reindex([COLUMN_NAME.RMW_TAKE_TIMESTAMP])
 
         # add prefix to columns; e.g. [topic_name]/source_timestamp
         self._rename_column(
@@ -1012,7 +1012,7 @@ class RecordsProviderLttng(RuntimeDataProvider):
         if COLUMN_NAME.DDS_WRITE_TIMESTAMP in records.columns:
             columns.append(COLUMN_NAME.DDS_WRITE_TIMESTAMP)
         columns.append(COLUMN_NAME.RMW_TAKE_TIMESTAMP)
-        # columns.append(COLUMN_NAME.SOURCE_TIMESTAMP)
+
         if not is_take_node:
             columns.append(COLUMN_NAME.CALLBACK_START_TIMESTAMP)
 
@@ -1467,13 +1467,6 @@ class NodeRecordsUseLatestMessage:
             f'{self._node_path.publish_topic_name}/rclcpp_publish_timestamp',
         ]
         left_key = sub_records.columns[0]
-        if is_take_node:
-            columns.remove(sub_records.columns[0])
-            left_key = sub_records.columns[1]
-        # for column in columns:
-        #     if column.endswith(COLUMN_NAME.SOURCE_TIMESTAMP):
-        #         columns.remove(column)
-        #         left_key = column
 
         pub_sub_records = merge_sequential(
             left_records=sub_records,

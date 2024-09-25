@@ -123,13 +123,11 @@ class RecordsMerged:
     ) -> RecordsInterface:
         logger.info('Started merging path records.')
 
-        def is_source_timestamp_column(column: str) -> bool:
+        def is_rmw_take_column(column):
             last_slash_index = column.rfind('/')
             if last_slash_index >= 0:
                 column = column[:last_slash_index]
-            return column.endswith('source_timestamp')
-        def is_rmw_take_column(column):
-            return 'rmw_take_timestamp' in column
+            return column.endswith('rmw_take_timestamp')
 
         column_merger = ColumnMerger()
         if include_first_callback and isinstance(targets[0], NodePath):
@@ -165,8 +163,6 @@ class RecordsMerged:
                 right_records)
             right_records.rename_columns(rename_rule)
 
-            # if is_source_timestamp_column(right_records.columns[0]):
-            #     left_records.drop_columns([left_records.columns[-1]])
             if left_records.columns[-1] != right_records.columns[0]:
                 raise InvalidRecordsError('left columns[-1] != right columns[0]')
 
@@ -239,13 +235,15 @@ class RecordsMerged:
         left_records.sort(first_column)
 
         # search drop columns, which contain 'source_timestamp'
-        source_columns = \
-            [column for column in left_records.columns if is_source_timestamp_column(column)]
-        left_records.drop_columns(source_columns)
+        # source_columns = \
+        #     [column for column in left_records.columns if is_source_timestamp_column(column)]
+        # left_records.drop_columns(source_columns)
 
-        # rmw_take_column = \
-        #     [column for column in left_records.columns if is_rmw_take_column(column)]
-        # left_records.drop_columns(rmw_take_column)
+        rmw_take_column = \
+            [column for column in left_records.columns if is_rmw_take_column(column)]
+        # if show rmw_take_timestamp in messageflow, comment out following line.
+        left_records.drop_columns(rmw_take_column)
+
         return left_records
 
 
