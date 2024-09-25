@@ -1467,12 +1467,13 @@ class NodeRecordsUseLatestMessage:
             f'{self._node_path.publish_topic_name}/rclcpp_publish_timestamp',
         ]
         left_key = sub_records.columns[0]
-        # if is_take_node:
-        #     left_key = sub_records.columns[1]
-        for column in columns:
-            if column.endswith(COLUMN_NAME.SOURCE_TIMESTAMP):
-                columns.remove(column)
-                left_key = column
+        if is_take_node:
+            columns.remove(sub_records.columns[0])
+            left_key = sub_records.columns[1]
+        # for column in columns:
+        #     if column.endswith(COLUMN_NAME.SOURCE_TIMESTAMP):
+        #         columns.remove(column)
+        #         left_key = column
 
         pub_sub_records = merge_sequential(
             left_records=sub_records,
