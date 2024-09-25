@@ -280,26 +280,7 @@ class RecordsProviderLttng(RuntimeDataProvider):
         subscription: SubscriptionStructValue,
         pub_records: RecordsInterface
     ) -> RecordsInterface:
-        """
-        Provide subscription records.
 
-        This method is implemented for nodes which receive messages
-        by 'take' method instead of subscription callbacks.
-
-        Parameters
-        ----------
-        subscription : SubscriptionStructValue
-            Target subscription value.
-
-        Returns
-        -------
-        RecordsInterface
-            Columns
-
-            - [topic_name]/source_timestamp
-            - rmw_take_timestamp
-
-        """
         callback = subscription.callback
         if callback is not None:
             callback_objects = self._helper.get_subscription_callback_objects(callback)
@@ -318,7 +299,8 @@ class RecordsProviderLttng(RuntimeDataProvider):
             sub_records = RecordsFactory.create_instance(
                 None,
                 columns=[
-                    # TODO
+                        ColumnValue(COLUMN_NAME.SOURCE_TIMESTAMP),
+                        ColumnValue(COLUMN_NAME.RMW_TAKE_TIMESTAMP)
                     ]
                 )
 
